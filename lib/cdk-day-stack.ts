@@ -7,6 +7,8 @@ import { Policy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Code, Function, Runtime, Tracing } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CfnOutput } from '@aws-cdk/core';
+import * as ssm from '@aws-cdk/aws-ssm';
+import { EncryptedBucket } from 'generic-ops-cdk/lib/EncryptedBucket.js';
 
 export class CdkDayStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -120,6 +122,16 @@ export class CdkDayStack extends cdk.Stack {
       methods: [HttpMethod.GET],
       integration: getProxy
     })
+
+    const myBucket = new EncryptedBucket(this, 'ExampleBucket', {
+    });
+
+    new ssm.StringParameter(this, 'Parameter', {
+      description: 'Bucket Name',
+      parameterName: '/buckets/cdk-example-bucket',
+      stringValue: myBucket.bucket.bucketName
+    });
+
 
     // ###################################################
     // Outputs
